@@ -1,6 +1,6 @@
 <?php
 /**
- * StupidlySimple Framework - A PHP Framework For Lazy Developers
+ * StupidlySimple Framework - A PHP Framework For Lazy Developers.
  *
  * Copyright (c) 2017 Fariz Luqman
  *
@@ -22,12 +22,13 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @package     StupidlySimple
  * @author      Fariz Luqman <fariz.fnb@gmail.com>
  * @copyright   2017 Fariz Luqman
  * @license     MIT
+ *
  * @link        https://stupidlysimple.github.io/
  */
+
 namespace Simplyfier\Http;
 
 use Simplyfier\Config;
@@ -35,8 +36,7 @@ use Simplyfier\Debugger;
 use Simplyfier\Viewer;
 
 /**
- * Class Router
- * @package Simplyfier\Http
+ * Class Router.
  *
  * @since 0.5.0
  */
@@ -45,14 +45,14 @@ class Router
     private static $mimeTypes;
     private static $config = null;
     private static $halts = false;
-    private static $routes = array();
-    private static $methods = array();
-    private static $callbacks = array();
-    private static $patterns = array(
+    private static $routes = [];
+    private static $methods = [];
+    private static $callbacks = [];
+    private static $patterns = [
         ':any' => '[^/]+',
         ':num' => '[0-9]+',
-        ':all' => '.*'
-    );
+        ':all' => '.*',
+    ];
 
     private static $isGroup = false;
     private static $groupHalt = false;
@@ -65,7 +65,8 @@ class Router
     private static $errorCallback;
 
     /**
-     * Defines a route w/ callback and method
+     * Defines a route w/ callback and method.
+     *
      * @param $method
      * @param $params
      *
@@ -93,7 +94,7 @@ class Router
         } else {
             // remove leading slash which may cause problems in Linux servers
             $params[0] = trim($params[0], '/');
-            $uri = dirname($_SERVER["SCRIPT_NAME"]) . '/' . $params[0];
+            $uri = dirname($_SERVER['SCRIPT_NAME']).'/'.$params[0];
             $callback = $params[1];
             array_push(self::$routes, $uri);
             array_push(self::$methods, strtoupper($method));
@@ -103,7 +104,7 @@ class Router
     }
 
     /**
-     * Load the configuration file
+     * Load the configuration file.
      *
      * @since 0.5.0
      */
@@ -115,7 +116,7 @@ class Router
         }
 
         foreach (self::$config['routes'] as $route) {
-            include(self::$config['path'] . $route . '.php');
+            include self::$config['path'].$route.'.php';
         }
     }
 
@@ -131,7 +132,7 @@ class Router
 
     /**
      * Run the dispatcher for the last time to collect all non-grouped
-     * routes. Will throw a 404 error if any route is not found
+     * routes. Will throw a 404 error if any route is not found.
      *
      * @since 0.5.0
      */
@@ -152,13 +153,14 @@ class Router
     public static function redirect($url, $permanent = false)
     {
         if (headers_sent() === false) {
-            header('Location: ' . $url, true, ($permanent === true) ? 301 : 302);
+            header('Location: '.$url, true, ($permanent === true) ? 301 : 302);
         }
         exit();
     }
 
     /**
      * @param $file_name
+     *
      * @return mixed|string
      *
      * @since 0.5.0
@@ -166,8 +168,8 @@ class Router
     public static function getMimeType($file_name)
     {
         $ext = pathinfo($file_name, PATHINFO_EXTENSION);
-        if (isset(static::$mimeTypes['.' . $ext])) {
-            return static::$mimeTypes['.' . $ext];
+        if (isset(static::$mimeTypes['.'.$ext])) {
+            return static::$mimeTypes['.'.$ext];
         } else {
             return 'text/plain';
         }
@@ -185,6 +187,7 @@ class Router
 
     /**
      * @param $file_name
+     *
      * @return mixed|string
      *
      * @since 0.5.0
@@ -192,19 +195,21 @@ class Router
     public static function getCurrentRoute()
     {
         $a = self::findOverlap(SS_PATH, self::$currentURI)[0];
-        return (str_replace($a, '', self::$currentURI));
+
+        return str_replace($a, '', self::$currentURI);
     }
 
     /**
      * @param $str1
      * @param $str2
+     *
      * @return array|bool
      *
      * @since 0.5.0
      */
     public static function findOverlap($str1, $str2)
     {
-        $return = array();
+        $return = [];
         $sl1 = strlen($str1);
         $sl2 = strlen($str2);
         $max = $sl1 > $sl2 ? $sl2 : $sl1;
@@ -220,17 +225,20 @@ class Router
         if (!empty($return)) {
             return $return;
         }
+
         return false;
     }
 
     /**
-     * Runs the callback for the given request
+     * Runs the callback for the given request.
      *
      * @since 0.5.0
      */
     private static function runDispatcher()
     {
-        if (self::$groupHalt || self::$halts) return;
+        if (self::$groupHalt || self::$halts) {
+            return;
+        }
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
         $searches = array_keys(static::$patterns);
@@ -299,7 +307,7 @@ class Router
 
                         if (self::$halts) {
                             return true;
-                        };
+                        }
                     }
                 }
             }
@@ -311,7 +319,7 @@ class Router
                     $route = str_replace($searches, $replaces, $route);
                 }
 
-                if (preg_match('#^' . $route . '$#', $uri, $matched)) {
+                if (preg_match('#^'.$route.'$#', $uri, $matched)) {
                     if (self::$methods[$pos] === $method || self::$methods[$pos] === 'ANY') {
                         self::haltOnMatch();
                         $found_route = true;
@@ -339,9 +347,11 @@ class Router
                                 //"controller and action not found"
                                 Debugger::report(500);
                             } else {
-                                call_user_func_array(array($controller, $segments[1]), $matched);
+                                call_user_func_array([$controller, $segments[1]], $matched);
                             }
-                            if (self::$halts) return;
+                            if (self::$halts) {
+                                return;
+                            }
                         } else {
                             self::haltOnMatch();
                             $found_route = true;
@@ -353,7 +363,9 @@ class Router
                             }
 
                             call_user_func_array(self::$callbacks[$pos], $matched);
-                            if (self::$halts) return;
+                            if (self::$halts) {
+                                return;
+                            }
                         }
                     } else {
                         // continue searching
@@ -366,5 +378,4 @@ class Router
         // Tell if there is no found grouped routes
         return false;
     }
-
 }
