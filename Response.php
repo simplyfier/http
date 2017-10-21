@@ -1,6 +1,6 @@
 <?php
 /**
- * StupidlySimple Framework - A PHP Framework For Lazy Developers
+ * StupidlySimple Framework - A PHP Framework For Lazy Developers.
  *
  * Copyright (c) 2017 Fariz Luqman
  *
@@ -22,24 +22,25 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @package     StupidlySimple
  * @author      Fariz Luqman <fariz.fnb@gmail.com>
  * @copyright   2017 Fariz Luqman
  * @license     MIT
+ *
  * @link        https://stupidlysimple.github.io/
  */
+
 namespace Simplyfier\Http;
 
 /**
- * Class Response
- * @package Simplyfier\Http
+ * Class Response.
  *
  * @since 0.5.0
  */
-class Response {
-
+class Response
+{
     /**
-     * Hive containing all response values
+     * Hive containing all response values.
+     *
      * @var array
      *
      * @since 0.5.0
@@ -53,17 +54,19 @@ class Response {
     /**
      * Response constructor.
      */
-	private function __construct()
+    private function __construct()
     {
-        if(!isset($_SESSION)){
+        if (!isset($_SESSION)) {
             session_start();
         }
-	}
+    }
 
     /**
-     * Redirect to a location
+     * Redirect to a location.
+     *
      * @param $htmlLocation
      * @param int $time
+     *
      * @return Response
      *
      * @since 0.5.0
@@ -72,8 +75,9 @@ class Response {
     {
         self::$htmlLocation = $htmlLocation;
         self::$time = $time;
-        return new self;
-	}
+
+        return new self();
+    }
 
     /**
      * @param array $flashVars
@@ -92,9 +96,8 @@ class Response {
      */
     public function __destruct()
     {
-        if(!headers_sent())
-        {
-            header("Location:".self::$htmlLocation, TRUE, 302);
+        if (!headers_sent()) {
+            header('Location:'.self::$htmlLocation, true, 302);
             exit();
         }
         // Something has caused our redirect not working properly. Using redirect with meta
