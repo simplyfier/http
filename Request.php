@@ -1,6 +1,6 @@
 <?php
 /**
- * StupidlySimple Framework - A PHP Framework For Lazy Developers
+ * StupidlySimple Framework - A PHP Framework For Lazy Developers.
  *
  * Copyright (c) 2017 Fariz Luqman
  *
@@ -22,73 +22,79 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @package     StupidlySimple
  * @author      Fariz Luqman <fariz.fnb@gmail.com>
  * @copyright   2017 Fariz Luqman
  * @license     MIT
+ *
  * @link        https://stupidlysimple.github.io/
  */
+
 namespace Simplyfier\Http;
 
 /**
- * Class Request
- * @package Simplyfier\Http
+ * Class Request.
  *
  * @since 0.5.0
  */
-class Request {
-
-	private static $_instance = null;
-	private $data = [];
+class Request
+{
+    private static $_instance = null;
+    private $data = [];
 
     /**
      * Request constructor.
      *
      * @since 0.5.0
      */
-	private function __construct(){
+    private function __construct()
+    {
         // merge data with get, post and files
-		$this->data = array_merge($_GET, $_POST, $_FILES);
+        $this->data = array_merge($_GET, $_POST, $_FILES);
 
-		// start session to get flash variables
-        if(!isset($_SESSION)){
+        // start session to get flash variables
+        if (!isset($_SESSION)) {
             session_start();
         }
         // merge data with flash variables
-		if(isset($_SESSION['ss_flash_variables'])){
-            $this->data = array_merge($_SESSION['ss_flash_variables']);
+        if (isset($_SESSION['ss_flash_variables'])) {
+            $this->data = array_merge($this->data, $_SESSION['ss_flash_variables']);
             unset($_SESSION['ss_flash_variables']);
         }
-	}
+    }
 
     /**
      * @param null $key
+     *
      * @return array|mixed|null
      *
      * @since 0.5.0
      */
-	static function get($key = null){
-		if (self::$_instance === null) {
-			self::$_instance = new self;
-		}
+    public static function get($key = null)
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
 
-		return self::$_instance->returnRequest($key);
-	}
+        return self::$_instance->returnRequest($key);
+    }
 
     /**
      * @param null $key
+     *
      * @return array|mixed|null
      *
      * @since 0.5.0
      */
-	function returnRequest($key = null){
-		if($key !== null){
-			if(!isset($this->data[$key])){
-				return null;
-			}
-			return $this->data[$key];
-		}else{
-			return $this->data;
-		}
-	}
+    public function returnRequest($key = null)
+    {
+        if ($key !== null) {
+            if (!isset($this->data[$key])) {
+                return;
+            }
+
+            return $this->data[$key];
+        } else {
+            return $this->data;
+        }
+    }
 }
